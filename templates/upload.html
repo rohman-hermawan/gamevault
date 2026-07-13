@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Unggah Video · GameVault{% endblock %}
+{% block page_title %}Unggah Video{% endblock %}
+
+{% block content %}
+
+<section class="upload-page-grid">
+
+    <aside class="upload-showcase">
+        <div class="upload-showcase-copy">
+            <p class="page-kicker">GAMEPLAY UPLOAD</p>
+            <h2>Simpan rekaman terbaik ke MinIO S3.</h2>
+            <p>
+                Tambahkan video beserta judul, nama game, kategori,
+                dan deskripsi. File akan disimpan sebagai object
+                pada bucket gameplay-videos.
+            </p>
+
+            <div class="upload-points">
+                <span>MP4, WEBM, MKV, MOV, AVI</span>
+                <span>Maksimal 2 GB</span>
+                <span>Metadata tersimpan otomatis</span>
+            </div>
+        </div>
+
+        <div class="upload-character" aria-hidden="true">
+            <img
+                src="{{ url_for('static', filename='images/hirara.png') }}"
+                alt=""
+            >
+        </div>
+    </aside>
+
+    <section class="form-card upload-card">
+        <div class="upload-card-head">
+            <div>
+                <p class="page-kicker">UPLOAD OBJECT KE MINIO</p>
+                <h1>Unggah video gameplay</h1>
+                <p>Lengkapi data video sebelum mengunggah file.</p>
+            </div>
+
+            <a class="button secondary" href="{{ url_for('index') }}">
+                Kembali
+            </a>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="upload-form">
+
+            <label class="drop-zone upload-drop-zone">
+                <span class="drop-icon">↑</span>
+                <strong>Pilih atau jatuhkan file video</strong>
+                <span id="selected-file-name">
+                    MP4, WEBM, MKV, MOV, atau AVI. Maksimal 2 GB.
+                </span>
+
+                <input
+                    id="video-file"
+                    type="file"
+                    name="video"
+                    accept="video/*,.mkv,.avi"
+                    required
+                >
+            </label>
+
+            <div class="form-grid">
+                <label>
+                    <span>Judul video</span>
+                    <input
+                        type="text"
+                        name="title"
+                        value="{{ form.title if form else '' }}"
+                        placeholder="Contoh: Ranked Match Terbaik"
+                    >
+                </label>
+
+                <label>
+                    <span>Nama game</span>
+                    <input
+                        type="text"
+                        name="game"
+                        value="{{ form.game if form else '' }}"
+                        placeholder="Contoh: Genshin Impact"
+                    >
+                </label>
+
+                <label>
+                    <span>Kategori</span>
+                    <select name="category">
+                        {% set selected = form.category if form else 'Gameplay' %}
+
+                        {% for item in [
+                            'Gameplay',
+                            'Tutorial',
+                            'Highlight',
+                            'Walkthrough',
+                            'Livestream'
+                        ] %}
+                        <option
+                            value="{{ item }}"
+                            {% if selected == item %}selected{% endif %}
+                        >
+                            {{ item }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <label class="full">
+                    <span>Deskripsi</span>
+                    <textarea
+                        name="description"
+                        rows="5"
+                        placeholder="Tambahkan catatan singkat tentang video"
+                    >{{ form.description if form else '' }}</textarea>
+                </label>
+            </div>
+
+            <div class="form-actions upload-actions">
+                <a class="button secondary" href="{{ url_for('index') }}">
+                    Batal
+                </a>
+
+                <button class="button" type="submit">
+                    <span>↑</span>
+                    Unggah ke MinIO
+                </button>
+            </div>
+
+        </form>
+    </section>
+
+</section>
+
+<script>
+    const input = document.getElementById("video-file");
+    const fileName = document.getElementById("selected-file-name");
+
+    input?.addEventListener("change", () => {
+        const file = input.files?.[0];
+
+        fileName.textContent = file
+            ? `${file.name} · ${(file.size / 1024 / 1024).toFixed(2)} MB`
+            : "MP4, WEBM, MKV, MOV, atau AVI. Maksimal 2 GB.";
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Halaman tidak ditemukan · GameVault{% endblock %}
+{% block content %}
+<div class="empty-state standalone">
+    <div class="empty-icon">404</div>
+    <h1>Halaman tidak ditemukan</h1>
+    <p>Alamat yang dibuka tidak tersedia.</p>
+    <a class="button" href="{{ url_for('index') }}">Kembali ke Dashboard</a>
+</div>
+{% endblock %}

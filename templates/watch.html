@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}{{ video.title }} · GameVault{% endblock %}
+{% block page_title %}Video Player{% endblock %}
+
+{% block content %}
+
+<section class="watch-toolbar">
+    <div>
+        <p class="page-kicker">NOW PLAYING</p>
+        <h1>{{ video.title }}</h1>
+
+        <div class="watch-meta-line">
+            <span>{{ video.game or 'Nama game belum diisi' }}</span>
+            <span>{{ video.category }}</span>
+            <span>{{ video.size|human_size }}</span>
+        </div>
+    </div>
+
+    <div class="watch-toolbar-actions">
+        <a class="button secondary" href="{{ url_for('index') }}">
+            Kembali
+        </a>
+
+        <a
+            class="button"
+            href="{{ url_for('download', object_name=video.object_name) }}"
+        >
+            <span>↓</span>
+            Unduh Video
+        </a>
+    </div>
+</section>
+
+<section class="watch-player-card">
+    <div class="watch-player-frame">
+        <video controls preload="metadata">
+            <source src="{{ stream_url }}" type="{{ video.content_type }}">
+            Browser tidak mendukung pemutaran video ini.
+            Gunakan tombol Unduh Video.
+        </video>
+    </div>
+
+    <div class="watch-info">
+        <div class="watch-info-head">
+            <div>
+                <p class="page-kicker">VIDEO INFORMATION</p>
+                <h2>Informasi video</h2>
+            </div>
+
+            <span class="badge">{{ video.category }}</span>
+        </div>
+
+        <div class="watch-info-grid">
+            <article class="watch-info-item">
+                <span>Nama file</span>
+                <strong>{{ video.original_name }}</strong>
+            </article>
+
+            <article class="watch-info-item">
+                <span>Game</span>
+                <strong>{{ video.game or '-' }}</strong>
+            </article>
+
+            <article class="watch-info-item">
+                <span>Ukuran</span>
+                <strong>{{ video.size|human_size }}</strong>
+            </article>
+
+            <article class="watch-info-item watch-description">
+                <span>Deskripsi</span>
+                <strong>{{ video.description or '-' }}</strong>
+            </article>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

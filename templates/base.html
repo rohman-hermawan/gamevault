@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description" content="GameVault, aplikasi pengelolaan video gameplay berbasis MinIO S3.">
+
+    <title>{% block title %}GameVault{% endblock %}</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=5">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}?v=1">
+</head>
+
+<body class="{% block body_class %}{% endblock %}">
+
+    <div class="app-shell">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <a class="brand" href="{{ url_for('index') }}">
+                <span class="brand-mark">GV</span>
+
+                <span class="brand-copy"> 
+                    <strong>GameVault</strong>
+                    <small>Gameplay Storage</small>
+                </span>
+            </a>
+
+            <div class="sidebar-label">MENU UTAMA</div>
+
+            <nav class="sidebar-nav">
+
+                <a href="{{ url_for('index') }}" class="sidebar-link
+                {% if request.endpoint == 'index' %}active{% endif %}">
+                    <span class="nav-icon">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="{{ url_for('upload') }}" class="sidebar-link
+                {% if request.endpoint == 'upload' %}active{% endif %}">
+                    <span class="nav-icon">＋</span>
+                    <span>Unggah Video</span>
+                </a>
+
+                <a href="{{ url_for('index') }}#video-library" class="sidebar-link">
+                    <span class="nav-icon">▶</span>
+                    <span>Video Library</span>
+                </a>
+
+                <a href="http://localhost:9001" target="_blank" rel="noopener" class="sidebar-link">
+                    <span class="nav-icon">◈</span>
+                    <span>MinIO Storage</span>
+                </a>
+
+            </nav>
+
+            <!-- HIRARA CHARACTER CARD -->
+            <div class="sidebar-character sidebar-character-image">
+                <div class="character-glow"></div>
+
+                <img src="{{ url_for('static', filename='images/hirara.png') }}" alt="Hirara Mobile Legends">
+            </div>
+
+            <div class="storage-status">
+                <span class="status-dot"></span>
+
+                <div>
+                    <strong>MinIO S3</strong>
+                    <small>Object storage active</small>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- MAIN APPLICATION -->
+        <section class="app-main">
+
+            <header class="topbar">
+
+                <div class="topbar-heading">
+                    <p>GAMEPLAY CLOUD STORAGE</p>
+
+                    <h1>
+                        {% block page_title %}
+                        Dashboard
+                        {% endblock %}
+                    </h1>
+                </div>
+
+                <div class="topbar-actions">
+
+                    <a href="http://localhost:9001" target="_blank" rel="noopener" class="minio-pill">
+                        <span></span>
+                        MinIO Online
+                    </a>
+
+                    <a class="button small" href="{{ url_for('upload') }}">
+                        <span>＋</span>
+                        Unggah Video
+                    </a>
+
+                </div>
+
+            </header>
+
+            <main class="page">
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+
+                {% if messages %}
+
+                <section class="alerts" aria-live="polite">
+
+                    {% for category, message in messages %}
+
+                    <div class="alert {{ category }}">
+                        {{ message }}
+                    </div>
+
+                    {% endfor %}
+
+                </section>
+
+                {% endif %}
+
+                {% endwith %}
+
+                {% block content %}{% endblock %}
+
+            </main>
+
+            <footer class="footer">
+
+                <span>
+                    GameVault · Flask + MinIO S3
+                </span>
+
+                <span>
+                    Gameplay Object Storage
+                </span>
+
+            </footer>
+
+        </section>
+
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard · GameVault{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<section class="game-banner">
+    <div class="game-banner-content">
+        <p class="game-banner-label">GAMEVAULT FEATURED CHARACTER</p>
+        <h1>Kelola video gameplay dalam satu tempat.</h1>
+        <p>Simpan, putar, cari, unduh, dan kelola video melalui penyimpanan MinIO S3.</p>
+
+        <div class="game-banner-actions">
+            <a class="button" href="{{ url_for('upload') }}">
+                <span>＋</span>
+                Unggah Video
+            </a>
+            <a class="button secondary" href="#video-library">
+                <span>▶</span>
+                Lihat Video
+            </a>
+        </div>
+    </div>
+
+    <div class="game-banner-character" aria-hidden="true">
+        <img src="{{ url_for('static', filename='images/raiden-shogun.png') }}" alt="">
+    </div>
+</section>
+
+{% if storage_error %}
+<div class="system-error">
+    <strong>MinIO belum terhubung.</strong>
+    <span>{{ storage_error }}</span>
+    <code>docker compose up --build</code>
+</div>
+{% endif %}
+
+<section class="stats-grid">
+    <article class="stat-card">
+        <span>Total Video</span>
+        <strong>{{ videos|length }}</strong>
+    </article>
+    <article class="stat-card">
+        <span>Total Penyimpanan</span>
+        <strong>{{ total_size|human_size }}</strong>
+    </article>
+    <article class="stat-card">
+        <span>Bucket</span>
+        <strong>gameplay-videos</strong>
+    </article>
+</section>
+
+<section class="panel" id="video-library">
+    <div class="panel-head">
+        <div>
+            <h2>Daftar Video</h2>
+            <p>Putar, unduh, cari, atau hapus file dari bucket.</p>
+        </div>
+        <form class="search" method="get" action="{{ url_for('index') }}">
+            <input type="search" name="q" value="{{ query }}" placeholder="Cari judul atau nama game">
+            <button type="submit">Cari</button>
+        </form>
+    </div>
+
+    {% if videos %}
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Video</th>
+                    <th>Game</th>
+                    <th>Kategori</th>
+                    <th>Ukuran</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for video in videos %}
+                <tr>
+                    <td>
+                        <strong>{{ video.title }}</strong>
+                        <span class="muted">{{ video.original_name }}</span>
+                    </td>
+                    <td>{{ video.game or '-' }}</td>
+                    <td><span class="badge">{{ video.category }}</span></td>
+                    <td>{{ video.size|human_size }}</td>
+                    <td>
+                        <div class="actions">
+                            <a href="{{ url_for('watch', object_name=video.object_name) }}">Putar</a>
+                            <a href="{{ url_for('download', object_name=video.object_name) }}">Unduh</a>
+                            <form method="post" action="{{ url_for('delete', object_name=video.object_name) }}" onsubmit="return confirm('Hapus video ini dari MinIO?')">
+                                <button class="link-danger" type="submit">Hapus</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">▶</div>
+        <h3>{% if query %}Video tidak ditemukan{% else %}Bucket masih kosong{% endif %}</h3>
+        <p>{% if query %}Coba gunakan kata kunci lain.{% else %}Unggah video gameplay pertama Anda.{% endif %}</p>
+        {% if not query %}<a class="button" href="{{ url_for('upload') }}">Unggah Sekarang</a>{% endif %}
+    </div>
+    {% endif %}
+</section>
+
+{% endblock %}
